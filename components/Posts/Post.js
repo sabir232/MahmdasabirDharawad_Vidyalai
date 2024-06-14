@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
+import axios from 'axios';
 
 const PostContainer = styled.div(() => ({
   width: '300px',
@@ -16,7 +17,7 @@ const CarouselContainer = styled.div(() => ({
 
 const Carousel = styled.div(() => ({
   display: 'flex',
-  overflowX: 'scroll',
+  overflowX: 'hidden',
   scrollbarWidth: 'none',
   msOverflowStyle: 'none',
   '&::-webkit-scrollbar': {
@@ -58,6 +59,7 @@ const Button = styled.button(() => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  zIndex: 1,
 }));
 
 const PrevButton = styled(Button)`
@@ -70,11 +72,24 @@ const NextButton = styled(Button)`
 
 const Post = ({ post }) => {
   const carouselRef = useRef(null);
+  const [imageWidth, setImageWidth] = useState(0);
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      const handleResize = () => {
+        const firstImage = carouselRef.current.querySelector('img');
+        if (firstImage) {
+          setImageWidth(firstImage.clientWidth); // image width
+        }
+      };
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [carouselRef.current]);
 
   const handleNextClick = () => {
     if (carouselRef.current) {
-      const imageWidth =
-        carouselRef.current.querySelector('img').clientWidth + 20; // image width + padding
       carouselRef.current.scrollBy({
         left: imageWidth,
         behavior: 'smooth',
@@ -84,8 +99,6 @@ const Post = ({ post }) => {
 
   const handlePrevClick = () => {
     if (carouselRef.current) {
-      const imageWidth =
-        carouselRef.current.querySelector('img').clientWidth + 20; // image width + padding
       carouselRef.current.scrollBy({
         left: -imageWidth,
         behavior: 'smooth',
@@ -99,7 +112,16 @@ const Post = ({ post }) => {
         <Carousel ref={carouselRef}>
           {post.images.map((image, index) => (
             <CarouselItem key={index}>
-              <Image src={image.url} alt={post.title} />
+              <Image
+                src={image.url}
+                alt={post.title}
+                onLoad={() => {
+                  const firstImage = carouselRef.current.querySelector('img');
+                  if (firstImage) {
+                    setImageWidth(firstImage.clientWidth); // image width
+                  }
+                }}
+              />
             </CarouselItem>
           ))}
         </Carousel>
@@ -116,6 +138,7 @@ const Post = ({ post }) => {
 
 Post.propTypes = {
   post: PropTypes.shape({
+    userId: PropTypes.number.isRequired,
     content: PropTypes.any,
     images: PropTypes.arrayOf(
       PropTypes.shape({

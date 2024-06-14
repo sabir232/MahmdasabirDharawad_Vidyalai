@@ -39,10 +39,10 @@ export default function Posts() {
   const [hasMorePosts, setHasMorePosts] = useState(true);
 
   const { isSmallerDevice } = useWindowWidth();
-
   const postsPerPage = isSmallerDevice ? 5 : 10;
 
   const fetchPosts = async page => {
+    setIsLoading(true);
     try {
       const { data: newPosts } = await axios.get('/api/v1/posts', {
         params: { start: page * postsPerPage, limit: postsPerPage },
@@ -52,6 +52,7 @@ export default function Posts() {
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -59,9 +60,7 @@ export default function Posts() {
   }, [isSmallerDevice, page]);
 
   const handleClick = () => {
-    setIsLoading(true);
     setPage(prevPage => prevPage + 1);
-    setIsLoading(false);
   };
 
   return (
@@ -75,7 +74,7 @@ export default function Posts() {
       {hasMorePosts && (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <LoadMoreButton onClick={handleClick} disabled={isLoading}>
-            {!isLoading && 'Load More'}
+            {!isLoading ? 'Load More' : 'Loading...'}
           </LoadMoreButton>
         </div>
       )}
