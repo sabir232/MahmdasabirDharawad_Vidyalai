@@ -12,7 +12,7 @@ const PostContainer = styled.div(() => ({
 }));
 
 const CarouselContainer = styled.div(() => ({
-  position: 'relative',
+  position: 'relative', //Fixed the carousel size relative to image
 }));
 
 const Carousel = styled.div(() => ({
@@ -23,7 +23,7 @@ const Carousel = styled.div(() => ({
   '&::-webkit-scrollbar': {
     display: 'none',
   },
-  position: 'relative',
+  position: 'relative', //Fixed the carousel size relative to image
 }));
 
 const CarouselItem = styled.div(() => ({
@@ -60,6 +60,13 @@ const Button = styled.button(() => ({
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 1,
+}));
+const UserDetails = styled.div(() => ({
+  fontSize: '20px',
+  color: '#555',
+  marginTop: '10px',
+  fontStyle: 'italic',
+  fontWeight: 'bold',
 }));
 
 const PrevButton = styled(Button)`
@@ -128,6 +135,11 @@ const Post = ({ post }) => {
         <PrevButton onClick={handlePrevClick}>&#10094;</PrevButton>
         <NextButton onClick={handleNextClick}>&#10095;</NextButton>
       </CarouselContainer>
+      {/* Rendered the user : email , name  */}
+      <UserDetails>
+        Name:<p>{post.userDetails.name}</p>
+        Email:<p>{post.userDetails.email}</p>
+      </UserDetails>
       <Content>
         <h2>{post.title}</h2>
         <p>{post.body}</p>

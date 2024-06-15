@@ -1,9 +1,9 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import styled from '@emotion/styled';
 import Post from './Post';
 import Container from '../common/Container';
-import useWindowWidth from '../hooks/useWindowWidth';
+import { WindowWidthContext } from '../hooks/useWindowWidth';
 
 const PostListContainer = styled.div(() => ({
   display: 'flex',
@@ -38,7 +38,7 @@ export default function Posts() {
   const [page, setPage] = useState(0);
   const [hasMorePosts, setHasMorePosts] = useState(true);
 
-  const { isSmallerDevice } = useWindowWidth();
+  const { isSmallerDevice } = useContext(WindowWidthContext);
   const postsPerPage = isSmallerDevice ? 5 : 10;
 
   const fetchPosts = async page => {
@@ -70,7 +70,7 @@ export default function Posts() {
           <Post key={post.id} post={post} />
         ))}
       </PostListContainer>
-
+      {/* Implemented the load more button and disabled the button when no post is loaded */}
       {hasMorePosts && (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <LoadMoreButton onClick={handleClick} disabled={isLoading}>

@@ -1,6 +1,11 @@
-import { useState, useEffect } from 'react';
+//Convertion of  useWindowWidth hook to ContextAPI.
+//By declaring the ContextAPI globally and access the isSmallerDevice property.
 
-function useWindowWidth() {
+import React, { createContext, useState, useEffect } from 'react';
+
+const WindowWidthContext = createContext();
+
+const WindowWidthProvider = ({ children }) => {
   const [isSmallerDevice, setIsSmallerDevice] = useState(false);
 
   useEffect(() => {
@@ -16,8 +21,11 @@ function useWindowWidth() {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+  return (
+    <WindowWidthContext.Provider value={{ isSmallerDevice }}>
+      {children}
+    </WindowWidthContext.Provider>
+  );
+};
 
-  return { isSmallerDevice };
-}
-
-export default useWindowWidth;
+export { WindowWidthContext, WindowWidthProvider };
